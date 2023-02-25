@@ -1,3 +1,7 @@
+```shell
+git clone https://github.com/YINYIPENG-EN/yolov5_reid.git
+```
+
 # 训练
 
 ```shell
