@@ -73,6 +73,8 @@ Loading pretrained ImageNet model......
 
 ```
 
+CSDN:https://blog.csdn.net/z240626191s/article/details/129221510?spm=1001.2014.3001.5501
+
 #  训练预权重下载：
 
 将 **r50_ibn_2.pth，resnet50-19c8e357.pth**放在yolov5_reid/weights下
