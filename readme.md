@@ -98,6 +98,28 @@ Loading pretrained ImageNet model......
 
 ```
 
+# 测试
+
+输入以下命令即可快速开启测试，获得测试结果
+
+【此脚本是针对训练后的模型单独获得测试结果，例如mAP、Rank等指标】
+```
+
+python tools/test.py --weights weights/ReID_resnet50_ibn_a.pth
+
+```
+
+测试结果如下：
+
+```
+Validation Results
+mAP: 92.0%
+CMC curve, Rank-1  :97.2%
+CMC curve, Rank-5  :99.1%
+CMC curve, Rank-10 :99.5%
+```
+
+
 # 说明
 
 开发不易，**本项目部分功能有偿提供**。联系方式可进入CSDN博客链接扫描本末二维码添加，或直接微信搜索:y24065939s。
