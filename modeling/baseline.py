@@ -127,17 +127,18 @@ class Baseline(nn.Module):
 
         if pretrain_choice == 'imagenet':
             # ---------------------------------
-            model = self.base
-            model_dict = model.state_dict()
-            pretrained_dict = torch.load(model_path)
-            pretrained_dict = {k: v for k, v in pretrained_dict.items() if
-                               k in model_dict.keys() == pretrained_dict.keys()}
-            model_dict.update(pretrained_dict)
-            model.load_state_dict(model_dict)
-
+            model = self.base  # model
+            # model_dict = model.state_dict()  # get model defaults weight
+            pretrained_dict = torch.load(model_path)  # pretrained weight load
+            modified_dict = {}
+            for k, v in pretrained_dict.items():
+                if 'base.' in k:
+                    k = k.replace('base.', '')
+                modified_dict[k] = v
+            print(model.load_state_dict(modified_dict, strict=False))
             print('Loading pretrained ImageNet model......')
 
-        self.gap = nn.AdaptiveAvgPool2d(1)
+        self.gap = nn.AdaptiveAvgPool2d(1)  # add avgpool layer
         self.num_classes = num_classes
         self.neck = neck
         self.neck_feat = neck_feat
@@ -166,6 +167,7 @@ class Baseline(nn.Module):
 
         if self.training:
             cls_score = self.classifier(feat)
+            # cls_score 分类情况，hard label； global_feat：特征
             return cls_score, global_feat  # global feature for triplet loss
         else:
             if self.neck_feat == 'after':
@@ -181,5 +183,6 @@ class Baseline(nn.Module):
             if 'classifier' in i:
                 continue
             self.state_dict()[i].copy_(param_dict[i])
+        print("权重已加载")
 
 
