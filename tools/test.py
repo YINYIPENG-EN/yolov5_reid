@@ -12,15 +12,23 @@ from utils.logger import setup_logger
 
 
 def main():
-    parser = argparse.ArgumentParser(description="yolov5 with ReID Baseline Inference")
+    parser = argparse.ArgumentParser(description="yolo v5 with ReID Baseline Inference")
     parser.add_argument(
         "--config_file", default=r"./configs/softmax_triplet.yml", help="path to config file", type=str
     )
+    parser.add_argument('--model_name', type=str, default='resnet50_ibn_a', help='backbone')
+    parser.add_argument('--LAST_STRIDE', type=int, default=1, help='last stride')
+    parser.add_argument('--weights', type=str, default='', help='weight path')
+    parser.add_argument('--neck', type=str, default='bnneck', help='If train with BNNeck, options: bnneck or no')
+    parser.add_argument('--pretrain_choice', default='')
+    parser.add_argument('--test_neck', type=str, default='after', help='Which feature of BNNeck to be used for test, '
+                                                                       'before or after BNNneck, options: before or '
+                                                                       'after')
     parser.add_argument("opts", help="Modify config options using the command-line", default=None,
                         nargs=argparse.REMAINDER)
 
     args = parser.parse_args()
-
+    print(args)
     num_gpus = int(os.environ["WORLD_SIZE"]) if "WORLD_SIZE" in os.environ else 1
 
     if args.config_file != "":
@@ -35,7 +43,7 @@ def main():
     if output_dir and not os.path.exists(output_dir):
         mkdir(output_dir)
 
-    logger = setup_logger("yolov5 reid_baseline", output_dir, 0)
+    logger = setup_logger("yolo v5 reid_baseline", output_dir, 0)
     logger.info("Using {} GPUS".format(num_gpus))
     logger.info(args)
 
@@ -51,8 +59,8 @@ def main():
     cudnn.benchmark = True
 
     train_loader, val_loader, num_query, num_classes = make_data_loader(cfg)
-    model = build_model(cfg, num_classes)
-    model.load_param(cfg.TEST.WEIGHT)
+    model = build_model(args, num_classes)
+    model.load_param(args.weights)
 
     inference(cfg, model, val_loader, num_query)
 
