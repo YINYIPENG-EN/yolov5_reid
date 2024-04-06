@@ -22,16 +22,23 @@ def train(cfg, args):
     model = build_model(args, num_classes)
 
     if not args.IF_WITH_CENTER:
-        print('Train without center loss, the loss type is', cfg.MODEL.METRIC_LOSS_TYPE)
-        optimizer = make_optimizer(cfg, model)
+        print('Train without center loss, the loss type is', cfg.MODEL.METRIC_LOSS_TYPE)  # triplet 三元组损失函数
+        optimizer = make_optimizer(cfg, model)  # 优化器
         loss_func = make_loss(cfg, num_classes)     # modified by gu
-
+        if args.resume:
+            path_to_optimizer = args.weights.replace('model', 'optimizer')
+            optimizer_dict = torch.load(path_to_optimizer)
+            optimizer.load_state_dict(optimizer_dict['optimizer_state'])
+            for param_group in optimizer.param_groups:
+                param_group['initial_lr'] = optimizer_dict['lr']
         if args.pretrain_choice == 'imagenet':
-            start_epoch = 0
+            start_epoch = 0 if not args.resume else optimizer_dict['epoch']
             scheduler = WarmupMultiStepLR(optimizer, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA, cfg.SOLVER.WARMUP_FACTOR,
                                           cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
         else:
             print('Only support pretrain_choice for imagenet and self, but got {}'.format(args.pretrain_choice))
+        if args.resume:
+            scheduler.load_state_dict(optimizer_dict['scheduler'])
         logger.info('ready train...')
         do_train(
             cfg,
@@ -114,10 +121,10 @@ def train(cfg, args):
 def main():
     parser = argparse.ArgumentParser(description="Yolo v5 with ReID Baseline Training")
     parser.add_argument(
-        "--config_file", type=str, default=r"F:/yolov5_reid/configs/softmax_triplet.yml", help="path to config file"
+        "--config_file", type=str, default=r"configs/softmax_triplet.yml", help="path to config file"
     )
     parser.add_argument('--LAST_STRIDE', type=int, default=1, help='last stride')
-    parser.add_argument('--weights', type=str, default='F:/yolov5_reid//weights/r50_ibn_2.pth')
+    parser.add_argument('--weights', type=str, default='weights/r50_ibn_2.pth')
     parser.add_argument('--neck', type=str, default='bnneck', help='If train with BNNeck, options: bnneck or no')
     parser.add_argument('--test_neck', type=str, default='after', help='Which feature of BNNeck to be used for test, '
                                                                        'before or after BNNneck, options: before or '
@@ -130,6 +137,7 @@ def main():
                                                                                     "Loss with center loss has "
                                                                                     "different optimizer "
                                                                                     "configuration")
+    parser.add_argument('--resume', action='store_true', help='resume train')
     parser.add_argument("opts", help="Modify config options using the command-line", default=None,
                         nargs=argparse.REMAINDER)
 
