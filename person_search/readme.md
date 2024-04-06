@@ -71,3 +71,9 @@ python search.py --weights yolov5s.pt --source 0 --dist_thres 1.5
 
 链接：https://pan.baidu.com/s/1QYvFE6rDSmxNl4VBNBar-A 
 提取码：yypn
+
+GUI界面如下(有偿提供)：
+
+<p align="center">
+  <img src="GUI.jpg" width="1200" height="867"/>
+</p>
