@@ -9,6 +9,15 @@ python tools/train.py --config_file configs/softmax_triplet.yml MODEL.DEVICE_ID 
 
 ```
 
+## 中断后的继续训练或微调训练
+
+如果训练意外终止，或者希望继续训练，可以适用本功能。只需要传入--resume参数即可
+
+```shell
+python tools/train.py --weights 【your weight path】 --resume
+
+```
+
 ```shell
 环境说明：
 
@@ -42,6 +51,8 @@ ps:arrow_right:**该训练reid项目与person_search项目是独立的！！**�
 --pretrain_choice: Imagenet
 
 --IF_WITH_CENTER: us center loss, True or False.
+
+--resume:resume train
 
 :fountain_pen:
 
@@ -87,7 +98,23 @@ Loading pretrained ImageNet model......
 
 ```
 
+# 说明
+
+开发不易，**本项目部分功能有偿提供**。联系方式可进入CSDN博客链接扫描本末二维码添加，或直接微信搜索:y24065939s。
+
 CSDN:https://blog.csdn.net/z240626191s/article/details/129221510?spm=1001.2014.3001.5501
+
+**1.训练核心代码**
+
+有偿训练代码有两种：含**tensorboard**与不含**tensorboard**（价格不一样，与旧版本相比均支持继续训练）
+
+tensorboard包含(loss、acc、mAP、Rank、lr)曲线的可视化。
+
+**2.Yolov5 reid Gui**
+
+本项目person_search中的无Gui部分检测为免费提供，GUI部分为有偿使用，person_search详细使用可进入person_search中的readme中查看
+
+
 
 #  训练预权重下载：
 
