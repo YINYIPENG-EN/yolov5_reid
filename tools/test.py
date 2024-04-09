@@ -2,6 +2,7 @@ import argparse
 import os
 import sys
 from os import mkdir
+
 from torch.backends import cudnn
 sys.path.append('.')
 from config import cfg
@@ -38,7 +39,6 @@ def main():
             print(e)
     cfg.merge_from_list(args.opts)
     cfg.freeze()
-
     output_dir = cfg.OUTPUT_DIR
     if output_dir and not os.path.exists(output_dir):
         mkdir(output_dir)
@@ -58,11 +58,11 @@ def main():
         os.environ['CUDA_VISIBLE_DEVICES'] = cfg.MODEL.DEVICE_ID
     cudnn.benchmark = True
 
-    train_loader, val_loader, num_query, num_classes = make_data_loader(cfg)
+    _, val_loader, num_query, num_classes = make_data_loader(cfg)   # 加载数据集
     model = build_model(args, num_classes)
     model.load_param(args.weights)
 
-    inference(cfg, model, val_loader, num_query)
+    inference(cfg, model, val_loader, num_query, logger)
 
 
 if __name__ == '__main__':
