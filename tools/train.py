@@ -20,25 +20,26 @@ def train(cfg, args):
 
     # prepare model  模型初始化
     model = build_model(args, num_classes)
-
     if not args.IF_WITH_CENTER:
         print('Train without center loss, the loss type is', cfg.MODEL.METRIC_LOSS_TYPE)  # triplet 三元组损失函数
         optimizer = make_optimizer(cfg, model)  # 优化器
-        loss_func = make_loss(cfg, num_classes)     # modified by gu
+        loss_func = make_loss(cfg, num_classes)  # modified by gu
         if args.resume:
             path_to_optimizer = args.weights.replace('model', 'optimizer')
             optimizer_dict = torch.load(path_to_optimizer)
-            optimizer.load_state_dict(optimizer_dict['optimizer_state'])
-            for param_group in optimizer.param_groups:
-                param_group['initial_lr'] = optimizer_dict['lr']
+            optimizer_dict = optimizer_dict.state_dict()
+            optimizer.load_state_dict(optimizer_dict)
+            for state in optimizer.state.values():
+                for k, v in state.items():
+                    if torch.is_tensor(v):
+                        state[k] = v.cuda()
         if args.pretrain_choice == 'imagenet':
-            start_epoch = 0 if not args.resume else optimizer_dict['epoch']
+            start_epoch = 0 if not args.resume else eval(args.weights.split('_')[1])
             scheduler = WarmupMultiStepLR(optimizer, cfg.SOLVER.STEPS, cfg.SOLVER.GAMMA, cfg.SOLVER.WARMUP_FACTOR,
                                           cfg.SOLVER.WARMUP_ITERS, cfg.SOLVER.WARMUP_METHOD)
         else:
             print('Only support pretrain_choice for imagenet and self, but got {}'.format(args.pretrain_choice))
-        if args.resume:
-            scheduler.load_state_dict(optimizer_dict['scheduler'])
+
         logger.info('ready train...')
         do_train(
             cfg,
