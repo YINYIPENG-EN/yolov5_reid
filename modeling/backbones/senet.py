@@ -357,3 +357,15 @@ class SENet(nn.Module):
         x = self.layer3(x)
         x = self.layer4(x)
         return x
+               
+    def freeze_backbone(self):
+        backbone = [self.layer0, self.layer1, self.layer2, self.layer3, self.layer4]
+        for m in backbone:
+            for param in m.parameters():
+                param.requires_grad = False
+
+    def Unfreeze_backbone(self):
+        backbone = [self.layer0, self.layer1, self.layer2, self.layer3, self.layer4]
+        for m in backbone:
+            for param in m.parameters():
+                param.requires_grad = True
