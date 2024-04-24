@@ -149,7 +149,18 @@ class ResNet_IBN(nn.Module):
                 continue
             self.state_dict()[i].copy_(param_dict[i])
 
+    def freeze_backbone(self):
+        backbone = [self.conv1,self.bn1,self.layer1,self.layer2, self.layer3, self.layer4]
+        for m in backbone:
+            for param in m.parameters():
+                param.requires_grad = False
 
+    def Unfreeze_backbone(self):
+        backbone = [self.conv1,self.bn1,self.layer1,self.layer2, self.layer3, self.layer4]
+        for m in backbone:
+            for param in m.parameters():
+                param.requires_grad = True
+                       
 
 def resnet50_ibn_a(last_stride, pretrained=False, **kwargs):
     """Constructs a ResNet-50 model.
