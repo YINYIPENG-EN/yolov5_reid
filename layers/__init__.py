@@ -1,15 +1,16 @@
 # encoding: utf-8
 
 import torch.nn.functional as F
+from IPython import embed
 
 from .triplet_loss import TripletLoss, CrossEntropyLabelSmooth
 from .center_loss import CenterLoss
 
 
 def make_loss(cfg, num_classes):    # modified by gu
-    sampler = cfg.DATALOADER.SAMPLER
-    if cfg.MODEL.METRIC_LOSS_TYPE == 'triplet':
-        triplet = TripletLoss(cfg.SOLVER.MARGIN)  # triplet loss
+    sampler = cfg.DATALOADER.SAMPLER  # softmax_triplet
+    if cfg.MODEL.METRIC_LOSS_TYPE == 'triplet':  #
+        triplet = TripletLoss(cfg.SOLVER.MARGIN)  # triplet loss  0.3
     else:
         print('expected METRIC_LOSS_TYPE should be triplet'
               'but got {}'.format(cfg.MODEL.METRIC_LOSS_TYPE))
@@ -28,7 +29,11 @@ def make_loss(cfg, num_classes):    # modified by gu
         def loss_func(score, feat, target):
             if cfg.MODEL.METRIC_LOSS_TYPE == 'triplet':
                 if cfg.MODEL.IF_LABELSMOOTH == 'on':
-                    return xent(score, target) + triplet(feat, target)[0]
+                    cls_loss = xent(score, target)
+                    tr_loss = triplet(feat, target)
+                    p_inds, n_inds = tr_loss[-2].long(), tr_loss[-1].long()  # 取最难正样本的索引和最难负样本的距离
+                    # return xent(score, target) + triplet(feat, target)[0]  # traiplet[0]取的是loss
+                    return cls_loss + tr_loss[0], p_inds, n_inds
                 else:
                     return F.cross_entropy(score, target) + triplet(feat, target)[0]
             else:
