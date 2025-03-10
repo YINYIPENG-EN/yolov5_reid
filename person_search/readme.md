@@ -54,6 +54,8 @@ ps:也可以直接将图像放在query文件中，但名字也需要按mark1501�
 
 --save_res:保存视频图像
 
+注：跨视频人员检测，该部分和GUI交互界面(可选)为有偿提供，**可免费协助调试运行代码**
+
 ```shell
 python search.py --weights yolov5s.pt --source 0 --dist_thres 1.5
 ```
