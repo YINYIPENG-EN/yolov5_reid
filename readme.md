@@ -156,7 +156,7 @@ CSDN:https://blog.csdn.net/z240626191s/article/details/129221510?spm=1001.2014.3
 
 **1.训练核心代码**
 
-有偿训练代码有两种：含**tensorboard**与不含**tensorboard**（价格不一样，与旧版本相比均支持继续训练）
+有偿训练含**tensorboard**
 
 tensorboard包含(loss、acc、mAP、Rank、lr)曲线的可视化。
 
@@ -164,7 +164,13 @@ tensorboard包含(loss、acc、mAP、Rank、lr)曲线的可视化。
 
 **2.Yolov5 reid Gui**
 
-本项目person_search中的无Gui部分检测为免费提供，GUI部分为有偿使用，person_search详细使用可进入person_search中的readme中查看
+本项目person_search有偿检测代码分两种，详细使用可进入person_search中的readme中查看：
+
+1.无GUI交互界面，可实现跨视频检测
+
+2.GUI交互界面有偿使用
+
+(注：可远程免费帮助调试运行)
 
 
 
